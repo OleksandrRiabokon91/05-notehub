@@ -1,3 +1,28 @@
-// !До http-запиту потрібно додати параметри page та perPage. Наприклад:
-// !GET https://notehub-public.goit.study/api/notes?page=1&perPage=12
-// !Додайте умову, щоб компонент Pagination рендерився лише в тому випадку, якщо кількість сторінок колекції нотатків більше 1.
+import css from "./Pagination.module.css";
+import ReactPaginate from "react-paginate";
+
+interface PaginationProps {
+  totalPages: number;
+  currentPage: number;
+  setCurrentPage: (selected: number) => void;
+}
+
+export default function Pagination({
+  totalPages,
+  currentPage,
+  setCurrentPage,
+}: PaginationProps) {
+  return (
+    <ReactPaginate
+      pageCount={totalPages}
+      pageRangeDisplayed={5}
+      marginPagesDisplayed={1}
+      onPageChange={({ selected }) => setCurrentPage(selected + 1)}
+      forcePage={currentPage - 1}
+      containerClassName={css.pagination}
+      activeClassName={css.active}
+      nextLabel="→"
+      previousLabel="←"
+    />
+  );
+}
