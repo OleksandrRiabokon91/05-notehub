@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNote } from "../../services/noteService";
 import type { NewNote } from "../../types/note";
 import { tagOptions } from "../../types/note";
-import {} from "../../types/note";
 import css from "./NoteForm.module.css";
 
 const validationSchema = Yup.object({
@@ -14,18 +13,18 @@ const validationSchema = Yup.object({
   tag: Yup.string().oneOf(tagOptions).required("Required"),
 });
 
-interface Props {
-  onSuccess: () => void;
+interface NoteFormProps {
+  onClose: () => void;
 }
 
-export default function NoteForm({ onSuccess }: Props) {
+export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      onSuccess();
+      onClose();
     },
     onError: (error) => {
       console.error("Ошибка при создании заметки:", error);
@@ -44,7 +43,7 @@ export default function NoteForm({ onSuccess }: Props) {
         mutation.mutate(values, {
           onSuccess: () => {
             formikHelpers.resetForm();
-            onSuccess();
+            onClose();
           },
           onError: (err) => {
             console.error("Ошибка при создании заметки:", err);
@@ -92,7 +91,7 @@ export default function NoteForm({ onSuccess }: Props) {
             <button
               type="button"
               className={css.cancelButton}
-              onClick={onSuccess}
+              onClick={onClose}
             >
               Cancel
             </button>

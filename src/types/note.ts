@@ -22,3 +22,8 @@ export const tagOptions: NoteTag[] = [
   "Meeting",
   "Shopping",
 ];
+
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}

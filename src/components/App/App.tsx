@@ -1,9 +1,8 @@
 import css from "./App.module.css";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 
-//? Компоненты
-import fetchNotes, { deleteNote } from "../../services/noteService";
+import fetchNotes from "../../services/noteService";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
@@ -11,8 +10,8 @@ import NoteForm from "../NoteForm/NoteForm";
 import SearchBox from "../SearchBox/SearchBox";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import type { FetchNotesResponse } from "../../types/note";
 
-//? Хук задержки поиска
 import { useDebounce } from "use-debounce";
 
 export default function App() {
@@ -21,28 +20,16 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 800);
 
-  const queryClient = useQueryClient();
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery]);
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<FetchNotesResponse>({
     queryKey: ["notes", currentPage, debouncedSearchQuery],
     queryFn: () =>
-      fetchNotes({
-        page: currentPage,
-        search: debouncedSearchQuery,
-      }),
+      fetchNotes({ page: currentPage, search: debouncedSearchQuery }),
+    placeholderData: (prev) => prev,
   });
-
-  const deleteMutation = useMutation({
-    mutationFn: (noteId: number) => deleteNote(noteId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
-  });
-
-  const handleDelete = (noteId: number) => {
-    deleteMutation.mutate(noteId);
-  };
-
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
@@ -68,7 +55,7 @@ export default function App() {
 
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)}>
-            <NoteForm onSuccess={() => setIsModalOpen(false)} />
+            <NoteForm onClose={() => setIsModalOpen(false)} />
           </Modal>
         )}
       </header>
@@ -76,17 +63,10 @@ export default function App() {
       {isLoading ? (
         <Loader />
       ) : isError ? (
-        <ErrorMessage message={(error as Error).message} />
+        <ErrorMessage message={error?.message ?? "Unknown error"} />
       ) : data && data.notes.length > 0 ? (
         <>
-          <NoteList notes={data.notes} onDelete={handleDelete} />
-          {data.totalPages > 1 && (
-            <Pagination
-              totalPages={data.totalPages}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          )}
+          <NoteList notes={data.notes} />
         </>
       ) : (
         <p>No notes found</p>
