@@ -1,8 +1,8 @@
 import css from "./App.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 
-import fetchNotes from "../../services/noteService";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
@@ -10,9 +10,9 @@ import NoteForm from "../NoteForm/NoteForm";
 import SearchBox from "../SearchBox/SearchBox";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import type { FetchNotesResponse } from "../../types/note";
 
-import { useDebounce } from "use-debounce";
+import fetchNotes from "../../services/noteService";
+import type { FetchNotesResponse } from "../../services/noteService";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(1);

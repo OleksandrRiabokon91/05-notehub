@@ -4,15 +4,17 @@ export interface Note {
   content: string;
   createdAt: string;
   updatedAt: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  tag: Tag;
 }
+
+export type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
 export type NoteTag = Note["tag"];
 
 export interface NewNote {
   title: string;
   content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  tag: Tag;
 }
 
 export const tagOptions: NoteTag[] = [
@@ -22,8 +24,3 @@ export const tagOptions: NoteTag[] = [
   "Meeting",
   "Shopping",
 ];
-
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}

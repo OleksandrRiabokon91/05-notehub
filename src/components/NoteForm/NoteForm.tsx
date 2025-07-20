@@ -43,10 +43,6 @@ export default function NoteForm({ onClose }: NoteFormProps) {
         mutation.mutate(values, {
           onSuccess: () => {
             formikHelpers.resetForm();
-            onClose();
-          },
-          onError: (err) => {
-            console.error("Ошибка при создании заметки:", err);
           },
         });
       }}
